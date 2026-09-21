@@ -1,4 +1,11 @@
 import "dotenv/config";
+import {
+  APIConnectionError,
+  AuthenticationError,
+  PermissionDeniedError,
+  RateLimitError,
+  TypeSafeError,
+} from "@typesafe-ai/sdk";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,6 +15,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const MIN_LENGTH = 40;
 const MAX_LENGTH = 20000;
+
+function messageFor(err) {
+  if (err instanceof AuthenticationError) {
+    return "TYPESAFE_API_KEY is missing or invalid. Check your .env file.";
+  }
+  if (err instanceof PermissionDeniedError) {
+    return `Access to the TypeSafe API was denied: ${err.message}`;
+  }
+  if (err instanceof RateLimitError) {
+    return "TypeSafe API rate limit reached. Please try again shortly.";
+  }
+  if (err instanceof APIConnectionError) {
+    return "Could not reach the TypeSafe API (network issue or timeout).";
+  }
+  if (err instanceof TypeSafeError) {
+    return `TypeSafe configuration error: ${err.message}`;
+  }
+  return "Detection service is currently unavailable. Please try again.";
+}
 
 export function createApp() {
   const app = express();
@@ -36,9 +62,7 @@ export function createApp() {
       res.json(result);
     } catch (err) {
       console.error("Detection failed:", err);
-      res.status(502).json({
-        error: "Detection service is currently unavailable. Please try again.",
-      });
+      res.status(502).json({ error: messageFor(err) });
     }
   });
 
