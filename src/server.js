@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -45,6 +46,13 @@ export function createApp() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
+  if (!process.env.TYPESAFE_API_KEY?.trim()) {
+    console.warn(
+      "Warning: TYPESAFE_API_KEY is not set. Copy .env.example to .env and add your key, " +
+        "or detection requests will fail.",
+    );
+  }
+
   const port = process.env.PORT || 3000;
   createApp().listen(port, () => {
     console.log(`AI detector listening on http://localhost:${port}`);
