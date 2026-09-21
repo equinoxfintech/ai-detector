@@ -1,4 +1,3 @@
-import "dotenv/config";
 import {
   APIConnectionError,
   AuthenticationError,
@@ -6,12 +5,21 @@ import {
   RateLimitError,
   TypeSafeError,
 } from "@typesafe-ai/sdk";
+import { config as loadEnv } from "dotenv";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { detectText } from "./typesafeClient.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Resolve .env relative to the project root, not process.cwd(), so it loads
+// regardless of the directory the process was started from.
+const envPath = path.join(__dirname, "..", ".env");
+const { error: envError } = loadEnv({ path: envPath });
+if (envError && envError.code !== "ENOENT") {
+  console.warn(`Could not read ${envPath}: ${envError.message}`);
+}
 
 const MIN_LENGTH = 40;
 const MAX_LENGTH = 20000;
@@ -70,10 +78,16 @@ export function createApp() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  if (!process.env.TYPESAFE_API_KEY?.trim()) {
+  const apiKey = process.env.TYPESAFE_API_KEY?.trim();
+  if (!apiKey) {
     console.warn(
-      "Warning: TYPESAFE_API_KEY is not set. Copy .env.example to .env and add your key, " +
-        "or detection requests will fail.",
+      `Warning: TYPESAFE_API_KEY is not set (looked for it in ${envPath} and the ` +
+        "environment). Copy .env.example to .env and add your key, or detection " +
+        "requests will fail.",
+    );
+  } else {
+    console.log(
+      `TYPESAFE_API_KEY loaded (${apiKey.length} chars, starts with "${apiKey.slice(0, 4)}...").`,
     );
   }
 
