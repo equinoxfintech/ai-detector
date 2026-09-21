@@ -1,0 +1,19 @@
+{
+  "name": "ai-detector",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Web app that scores whether a text was written by an AI or a human, powered by TypeSafe.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "^0.6.0",
+    "express": "^4.21.2"
+  }
+}

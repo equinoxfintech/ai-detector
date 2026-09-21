@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Detector</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="page__header">
+        <h1>AI Detector</h1>
+        <p class="page__subtitle">
+          Text einfügen und pr&uuml;fen, wie wahrscheinlich er von einer KI
+          geschrieben wurde.
+        </p>
+      </header>
+
+      <form id="detect-form" class="panel">
+        <label for="text-input" class="panel__label">Text</label>
+        <textarea
+          id="text-input"
+          name="text"
+          rows="12"
+          minlength="40"
+          maxlength="20000"
+          placeholder="F&uuml;ge hier mindestens ein paar S&auml;tze Text ein &hellip;"
+          required
+        ></textarea>
+        <div class="panel__footer">
+          <span id="char-count" class="char-count">0 Zeichen</span>
+          <button type="submit" id="submit-btn">Analysieren</button>
+        </div>
+      </form>
+
+      <section id="result" class="result" hidden aria-live="polite">
+        <div class="result__gauge">
+          <div class="result__bar">
+            <div id="ai-bar" class="result__bar-fill result__bar-fill--ai"></div>
+          </div>
+          <div class="result__labels">
+            <span id="ai-score" class="result__score result__score--ai">0% KI</span>
+            <span id="human-score" class="result__score result__score--human">0% Mensch</span>
+          </div>
+        </div>
+        <p id="verdict" class="result__verdict"></p>
+        <p id="model" class="result__meta"></p>
+      </section>
+
+      <p id="error" class="error" hidden role="alert"></p>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
